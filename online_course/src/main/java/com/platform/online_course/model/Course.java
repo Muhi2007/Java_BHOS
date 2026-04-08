@@ -102,6 +102,42 @@ public class Course implements Enrollable, Reviewable{
         return enrolledLearners;
     }
 
+    // Setters
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setAverageDuration(double averageDuration) {
+        this.averageDuration = averageDuration;
+    }
+
+    public void setRating(double rating) {
+        this.rating = rating;
+    }
+
+    public void setInstructor(Teacher instructor) {
+        this.instructor = instructor;
+    }
+
+    public void setAssessments(List<Assessment> assessments) {
+        this.assessments = assessments;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    public void setEnrolledLearners(Set<Learner> enrolledLearners) {
+        this.enrolledLearners = enrolledLearners;
+    }
 
     // Abstract methods
     @Override

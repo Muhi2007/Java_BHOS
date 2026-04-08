@@ -32,11 +32,6 @@ public class Teacher extends BaseUser{
         this.createdCourseIDs = createdCourseIDs;
     }
 
-    // Backward-compatible aliases for older call sites.
-    public Set<Long> getCreatedCouseIDs() {
-        return getCreatedCourseIDs();
-    }
-
     public void setCreatedCouseIDs(Set<Long> createdCouseIDs) {
         setCreatedCourseIDs(createdCouseIDs);
     }
