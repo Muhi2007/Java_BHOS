@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${quiz.name} + ' - Learnify'">Quiz - Learnify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body class="quiz-body">
+<div id="wrapper">
+
+    <!-- ── Sidebar ─────────────────────────────────────── -->
+    <div id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom">
+            <i class="bi bi-mortarboard-fill"></i> Learnify
+        </div>
+        <div class="list-group list-group-flush mt-3">
+            <a href="/learner/dashboard" class="list-group-item-sidebar">
+                <i class="bi bi-grid-1x2"></i> Dashboard
+            </a>
+            <a href="/learner/my-courses" class="list-group-item-sidebar active">
+                <i class="bi bi-book"></i> My Courses
+            </a>
+            <a href="#" class="list-group-item-sidebar">
+                <i class="bi bi-compass"></i> Discover
+            </a>
+            <div class="sidebar-section-label">Account</div>
+            <a href="/logout" class="list-group-item-sidebar text-danger">
+                <i class="bi bi-box-arrow-right"></i> Log Out
+            </a>
+        </div>
+    </div>
+
+    <!-- ── Page Content ──────────────────────────────── -->
+    <div id="page-content-wrapper">
+
+        <header class="top-header">
+            <div class="flex-grow-1 px-2">
+                <span class="fw-semibold text-muted small"><i class="bi bi-patch-question me-1 text-primary"></i>Quiz</span>
+                <span class="text-muted small"> / </span>
+                <span class="fw-semibold small" th:text="${quiz.name}">Quiz Name</span>
+            </div>
+            <div class="user-actions">
+                <a href="/learner/my-courses" class="btn btn-sm btn-outline-secondary">
+                    <i class="bi bi-x-lg me-1"></i>Exit
+                </a>
+            </div>
+        </header>
+
+        <main class="p-4">
+            <div class="row justify-content-center">
+                <div class="col-12 col-lg-8 col-xl-7">
+
+                    <!-- Quiz header card -->
+                    <div class="card border-0 mb-4 p-4 quiz-header-card">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h2 class="fw-bold mb-1" th:text="${quiz.name}">Quiz Name</h2>
+                                <p class="text-muted mb-0">
+                                    <i class="bi bi-list-ol me-1"></i>
+                                    <span th:text="${quiz.questions != null ? quiz.questions.size() : 0}">0</span> questions &nbsp;·&nbsp;
+                                    <i class="bi bi-trophy me-1"></i>Max score: <span th:text="${quiz.maxScore}">0</span> pts
+                                </p>
+                            </div>
+                            <span class="quiz-difficulty-badge ms-3"
+                                  th:classappend="${quiz.difficulty == 'Easy'} ? 'badge-easy' : (${quiz.difficulty == 'Medium'} ? 'badge-medium' : 'badge-hard')"
+                                  th:text="${quiz.difficulty}">Easy</span>
+                        </div>
+                    </div>
+
+                    <!-- ── Question Form ────────────────────────── -->
+                    <form th:action="@{/quiz/{id}/submit(id=${attemptID})}" method="post" id="quiz-form">
+
+                        <div th:each="question, qStat : ${quiz.questions}" class="question-card mb-4">
+                            <!-- Question header -->
+                            <div class="question-number">
+                                Question <span th:text="${qStat.index + 1}">1</span>
+                                <span class="text-muted"> / <span th:text="${quiz.questions.size()}">n</span></span>
+                            </div>
+                            <p class="question-text" th:text="${question.text}">Question text goes here.</p>
+
+                            <!-- Answer options as radio cards -->
+                            <div class="options-list">
+                                <label th:each="option, oStat : ${question.options}"
+                                       class="option-label"
+                                       th:for="${'q' + qStat.index + '_o' + oStat.index}">
+                                    <input type="radio"
+                                           th:id="${'q' + qStat.index + '_o' + oStat.index}"
+                                           th:name="${qStat.index}"
+                                           th:value="${option}"
+                                           class="option-radio">
+                                    <span class="option-marker">
+                                        <!-- A → B → C → D letters -->
+                                        <span th:text="${oStat.index == 0 ? 'A' : (oStat.index == 1 ? 'B' : (oStat.index == 2 ? 'C' : 'D'))}">A</span>
+                                    </span>
+                                    <span class="option-text" th:text="${option}">Option</span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <!-- Submit -->
+                        <div class="d-flex justify-content-between align-items-center mt-4 mb-5">
+                            <a href="/learner/my-courses" class="btn btn-outline-secondary px-4">
+                                <i class="bi bi-arrow-left me-1"></i>Back
+                            </a>
+                            <button type="submit" class="btn btn-primary px-5 fw-semibold" id="submit-quiz-btn">
+                                <i class="bi bi-send-check me-2"></i>Submit Quiz
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script>
+    // Highlight selected option card
+    document.querySelectorAll('.option-radio').forEach(radio => {
+        radio.addEventListener('change', function () {
+            const name = this.name;
+            document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+                r.closest('.option-label').classList.remove('selected');
+            });
+            this.closest('.option-label').classList.add('selected');
+        });
+    });
+
+    // Confirm before submit
+    document.getElementById('quiz-form').addEventListener('submit', function (e) {
+        const total = document.querySelectorAll('.question-card').length;
+        const answered = new Set(
+            [...document.querySelectorAll('.option-radio:checked')].map(r => r.name)
+        ).size;
+        if (answered < total) {
+            if (!confirm(`You have answered ${answered} of ${total} questions. Submit anyway?`)) {
+                e.preventDefault();
+            }
+        }
+    });
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

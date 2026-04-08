@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Learnify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div id="wrapper">
+
+    <!-- ── Sidebar ─────────────────────────────────────── -->
+    <div id="sidebar-wrapper">
+        <div class="sidebar-heading border-bottom">
+            <i class="bi bi-mortarboard-fill"></i> Learnify
+        </div>
+        <div class="list-group list-group-flush mt-3">
+            <a href="/learner/dashboard" class="list-group-item-sidebar active">
+                <i class="bi bi-grid-1x2"></i> Dashboard
+            </a>
+            <a href="/learner/my-courses" class="list-group-item-sidebar">
+                <i class="bi bi-book"></i> My Courses
+            </a>
+            <a href="#" class="list-group-item-sidebar">
+                <i class="bi bi-compass"></i> Discover
+            </a>
+
+            <div class="sidebar-section-label">Account</div>
+            <a href="#" class="list-group-item-sidebar">
+                <i class="bi bi-person"></i> Profile
+            </a>
+            <a href="/logout" class="list-group-item-sidebar text-danger">
+                <i class="bi bi-box-arrow-right"></i> Log Out
+            </a>
+        </div>
+    </div>
+
+    <!-- ── Page Content ──────────────────────────────── -->
+    <div id="page-content-wrapper">
+
+        <!-- Header -->
+        <header class="top-header">
+            <div class="search-bar d-none d-md-block">
+                <i class="bi bi-search"></i>
+                <input type="text" class="form-control" placeholder="Search courses...">
+            </div>
+            <div class="user-actions">
+                <button class="notification-btn" title="Notifications">
+                    <i class="bi bi-bell"></i>
+                </button>
+                <div class="user-avatar dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false"
+                     th:text="${username != null ? username.substring(0,1).toUpperCase() : 'U'}">U</div>
+                <ul class="dropdown-menu dropdown-menu-end border-0 shadow-sm mt-2 rounded-custom">
+                    <li><span class="dropdown-item-text text-muted small" th:text="${username}">User</span></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right me-2 text-muted"></i>Logout</a></li>
+                </ul>
+            </div>
+        </header>
+
+        <main class="p-4">
+
+            <!-- Page title -->
+            <div class="mb-4">
+                <h2 class="fw-bold mb-1">All Courses</h2>
+                <p class="text-muted mb-0">Browse everything available on the platform and enroll in what interests you.</p>
+            </div>
+
+            <!-- Stats row -->
+            <div class="row g-3 mb-4">
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-purple-light"><i class="bi bi-collection text-primary"></i></div>
+                        <div>
+                            <div class="stat-value" th:text="${courses.size()}">0</div>
+                            <div class="stat-label">Total Courses</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-card">
+                        <div class="stat-icon bg-green-light"><i class="bi bi-check-circle text-success"></i></div>
+                        <div>
+                            <div class="stat-value" th:text="${enrolled.size()}">0</div>
+                            <div class="stat-label">Enrolled</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Course Grid -->
+            <div class="row g-4">
+                <div class="col-md-6 col-xl-4" th:each="course : ${courses}">
+                    <div class="card h-100 course-card overflow-hidden">
+                        <!-- Card top colour strip based on category -->
+                        <div class="course-card-banner" th:classappend="${course.category == 'Programming'} ? 'banner-purple' : (${course.category == 'Backend Development'} ? 'banner-blue' : 'banner-green')">
+                            <i class="bi bi-mortarboard card-banner-icon"></i>
+                        </div>
+                        <div class="card-body p-4 d-flex flex-column">
+                            <!-- Category + Enrolled badge -->
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <span class="badge-custom" th:text="${course.category}">Category</span>
+                                <span class="badge bg-success-subtle text-success fw-semibold small"
+                                      th:if="${enrolled.contains(course.id)}">
+                                    <i class="bi bi-check-circle me-1"></i>Enrolled
+                                </span>
+                            </div>
+
+                            <h5 class="fw-bold mb-1" th:text="${course.name}">Course Name</h5>
+                            <p class="text-muted small mb-3 flex-grow-1"
+                               th:text="${course.description != null ? course.description : 'No description.'}">Description</p>
+
+                            <!-- Meta row -->
+                            <div class="d-flex gap-3 text-muted small mb-3">
+                                <span><i class="bi bi-clock me-1"></i><span th:text="${course.averageDuration}">0</span>h</span>
+                                <span><i class="bi bi-patch-question me-1"></i>
+                                    <span th:text="${course.assessments != null ? course.assessments.size() : 0}">0</span> quizzes</span>
+                            </div>
+
+                            <!-- Action buttons -->
+                            <div class="d-flex gap-2 mt-auto">
+                                <form th:if="${!enrolled.contains(course.id)}"
+                                      th:action="@{/enroll/{id}(id=${course.id})}" method="post" class="flex-grow-1">
+                                    <button type="submit" class="btn btn-primary w-100 fw-medium">
+                                        <i class="bi bi-plus-circle me-1"></i>Enroll
+                                    </button>
+                                </form>
+                                <a th:if="${enrolled.contains(course.id)}"
+                                   th:href="@{/course/{id}(id=${course.id})}"
+                                   class="btn btn-primary flex-grow-1 fw-medium">
+                                    View Course <i class="bi bi-arrow-right ms-1"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Empty state -->
+                <div class="col-12 text-center py-5" th:if="${#lists.isEmpty(courses)}">
+                    <i class="bi bi-folder-x text-muted mb-3" style="font-size:3rem;"></i>
+                    <h5 class="fw-bold">No courses available yet.</h5>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

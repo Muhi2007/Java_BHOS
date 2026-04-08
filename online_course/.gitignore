@@ -1,0 +1,59 @@
+# =========================
+# Build outputs
+# =========================
+target/
+build/
+out/
+
+# Keep Maven wrapper files in Git (important for reproducible builds)
+!.mvn/wrapper/maven-wrapper.jar
+
+# =========================
+# Logs and runtime files
+# =========================
+*.log
+logs/
+
+# H2 local file-based databases (if used outside in-memory mode)
+*.mv.db
+*.trace.db
+
+# =========================
+# IDE and tooling
+# =========================
+
+## VS Code
+.vscode/
+
+## IntelliJ IDEA
+.idea/
+*.iws
+*.iml
+*.ipr
+
+## Eclipse / STS
+.apt_generated/
+.classpath
+.factorypath
+.project
+.settings/
+.springBeans
+.sts4-cache/
+
+## NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+
+# =========================
+# OS / environment
+# =========================
+.DS_Store
+Thumbs.db
+
+# Local env/config secrets
+.env
+.env.*
+*.local

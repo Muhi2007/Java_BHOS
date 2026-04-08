@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1200" role="img" aria-labelledby="title desc">
+  <title id="title">Login learning illustration</title>
+  <desc id="desc">An education themed vector with books, laptop, and learner avatar.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6f42c1"/>
+      <stop offset="100%" stop-color="#59339d"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="100%" stop-color="#f5f1ff" stop-opacity="0.95"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="800" height="1200" fill="url(#bg)"/>
+  <circle cx="120" cy="180" r="140" fill="#ffffff" fill-opacity="0.08"/>
+  <circle cx="700" cy="1030" r="170" fill="#ffffff" fill-opacity="0.08"/>
+  <circle cx="650" cy="180" r="90" fill="#ffffff" fill-opacity="0.12"/>
+
+  <rect x="120" y="220" width="560" height="760" rx="30" fill="url(#card)"/>
+  <rect x="170" y="290" width="460" height="52" rx="14" fill="#e6dcff"/>
+  <rect x="170" y="375" width="460" height="52" rx="14" fill="#e6dcff"/>
+  <rect x="170" y="460" width="240" height="52" rx="14" fill="#e6dcff"/>
+  <rect x="170" y="545" width="460" height="130" rx="22" fill="#6f42c1" fill-opacity="0.9"/>
+
+  <circle cx="400" cy="810" r="90" fill="#6f42c1" fill-opacity="0.18"/>
+  <circle cx="400" cy="780" r="40" fill="#6f42c1"/>
+  <rect x="330" y="825" width="140" height="120" rx="50" fill="#6f42c1"/>
+
+  <g fill="#ffffff" fill-opacity="0.8">
+    <rect x="190" y="590" width="200" height="14" rx="7"/>
+    <rect x="190" y="620" width="140" height="14" rx="7"/>
+  </g>
+
+  <g transform="translate(500 740)">
+    <rect x="-5" y="95" width="120" height="14" rx="7" fill="#3f2775" fill-opacity="0.65"/>
+    <rect x="0" y="60" width="110" height="36" rx="8" fill="#f4ecff"/>
+    <rect x="6" y="47" width="96" height="20" rx="6" fill="#c9b2ff"/>
+    <rect x="12" y="34" width="82" height="15" rx="5" fill="#9d72e0"/>
+  </g>
+</svg>
