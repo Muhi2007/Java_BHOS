@@ -50,7 +50,7 @@ public class Quiz extends Assessment {
         return this.questions;
     }
 
-    public void submitAnswer(Long questionIndex, String answer) {
+    public void submitAnswer(Long questionIndex, String answer) throws IllegalArgumentException{
         if (questionIndex < 0) {
             throw new IllegalArgumentException("Question index cannot be negative");
         }
@@ -81,10 +81,8 @@ public class Quiz extends Assessment {
             if (submmitAns != null && correctAns.equalsIgnoreCase(submmitAns)) correctCount ++;
         }
 
-        if (this.questions.size() > 0) {
-            return (double)(correctCount / this.questions.size()) * this.getMaxScore();
-        }
-        return 0;
+        return ((double)correctCount / this.questions.size()) * this.getMaxScore();
+
     }
 
     private String normalize(String value) {

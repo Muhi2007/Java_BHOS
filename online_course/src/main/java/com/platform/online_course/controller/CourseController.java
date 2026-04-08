@@ -1,6 +1,7 @@
 package com.platform.online_course.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
@@ -25,6 +26,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
 public class CourseController {
+
+    // Dependecy injection
     private CourseRepository courseRepository;
     private LearnerRepository learnerRepository;
     private QuizRepository quizRepository;
@@ -62,15 +65,33 @@ public class CourseController {
             return "redirect:/learner/dashboard";
         }
 
-        QuizAttempt attempt = attemptRepository.findByStudentAndQuiz(student, quiz);
+        List<QuizAttempt> attempts = attemptRepository.findByStudentAndQuiz(student, quiz);
+
+        System.out.println(attempts.toString()); // testing purposes
+
+        QuizAttempt attempt = null;
+        QuizAttempt bestCompletedAttempt = null;
+        QuizAttempt activeAttempt = null;
+
+        for (QuizAttempt a : attempts) {
+            if (a.isComplete()) {
+                if (bestCompletedAttempt == null || a.getScore() > bestCompletedAttempt.getScore()) {
+                    if (bestCompletedAttempt != null) {
+                        attemptRepository.delete(bestCompletedAttempt);
+                    }
+                    bestCompletedAttempt = a;
+                } else {
+                    attemptRepository.delete(a);
+                }
+            } else {
+                attemptRepository.delete(a);
+            }
+        }
+
+        // Continue from an unfinished attempt when available; otherwise start fresh below.
+        attempt = activeAttempt;
         
-        if (attempt == null || attempt.isComplete()) {
-            attempt = new QuizAttempt();
-            attempt.setStudent(student);
-            attempt.setQuiz(quiz);
-            attemptRepository.save(attempt);
-        } else {
-            attemptRepository.delete(attempt);
+        if (attempt == null){ // Then start from scratch
             attempt = new QuizAttempt();
             attempt.setStudent(student);
             attempt.setQuiz(quiz);
@@ -106,24 +127,15 @@ public class CourseController {
 
             System.out.println(answersMap.toString()); // For testing puposes
 
-            // Accept multiple common form naming styles
-            answer = answersMap.get(String.valueOf(questionId));
-            if (answer == null) {
-                answer = answersMap.get("question_" + questionId);
-            }
-            if (answer == null) {
-                answer = answersMap.get(String.valueOf(i));
-            }
-            if (answer == null) {
-                answer = answersMap.get("question_" + i);
-            }
-
+            answer = answersMap.get(String.valueOf(i));
+            
             if (answer != null) {
                 // FIX 2: Use the exact Question ID as the key!
                 normalizedAnswers.put(questionId, answer);
             }
         }
 
+        System.out.println(normalizedAnswers.toString());
         // FIX 1: Pass the answers directly to the grading algorithm (Stateless!)
         double score = quiz.calculateScore(normalizedAnswers);
 
