@@ -41,8 +41,29 @@
                                 <div class="alert alert-danger rounded-custom" th:if="${param.error}" role="alert">
                                     <i class="bi bi-exclamation-triangle-fill me-2"></i> Invalid email or password
                                 </div>
+                                <div class="alert alert-success rounded-custom" th:if="${param.registered}" role="alert">
+                                    <i class="bi bi-check-circle-fill me-2"></i> Account created successfully. Please sign in.
+                                </div>
 
                                 <form th:action="@{/login}" method="post">
+                                    <div class="mb-4">
+                                        <label class="form-label fw-medium text-muted small d-block">LOGIN AS</label>
+                                        <div class="role-switch-wrap">
+                                            <div class="role-switch" role="radiogroup" aria-label="Select account type">
+                                            <input class="role-switch-input" type="radio" name="isLearner" id="loginLearner" value="true" checked>
+                                            <label class="role-switch-label" for="loginLearner">
+                                                <i class="bi bi-mortarboard me-1"></i>Learner
+                                            </label>
+
+                                            <input class="role-switch-input" type="radio" name="isLearner" id="loginTeacher" value="false">
+                                            <label class="role-switch-label" for="loginTeacher">
+                                                <i class="bi bi-easel2 me-1"></i>Teacher
+                                            </label>
+                                            </div>
+                                            <p class="role-switch-hint mb-0">Use the same role you selected during signup.</p>
+                                        </div>
+                                    </div>
+
                                     <div class="mb-3">
                                         <label for="email" class="form-label fw-medium text-muted small">EMAIL ADDRESS</label>
                                         <div class="input-group">

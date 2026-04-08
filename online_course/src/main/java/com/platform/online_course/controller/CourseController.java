@@ -67,8 +67,6 @@ public class CourseController {
 
         List<QuizAttempt> attempts = attemptRepository.findByStudentAndQuiz(student, quiz);
 
-        System.out.println(attempts.toString()); // testing purposes
-
         QuizAttempt attempt = null;
         QuizAttempt bestCompletedAttempt = null;
         QuizAttempt activeAttempt = null;
@@ -125,8 +123,6 @@ public class CourseController {
             Long questionId = question.getId();
             String answer = null;
 
-            System.out.println(answersMap.toString()); // For testing puposes
-
             answer = answersMap.get(String.valueOf(i));
             
             if (answer != null) {
@@ -134,13 +130,10 @@ public class CourseController {
                 normalizedAnswers.put(questionId, answer);
             }
         }
-
-        System.out.println(normalizedAnswers.toString());
-        // FIX 1: Pass the answers directly to the grading algorithm (Stateless!)
+        
         double score = quiz.calculateScore(normalizedAnswers);
 
-        // Save the data to the Attempt (The Receipt), NOT the Quiz!
-        attempt.setSubmittion(normalizedAnswers); // Ensure your attempt class has this setter
+        attempt.setSubmittion(normalizedAnswers);
         attempt.setScore(score);
         attempt.markAsComplete();
         attemptRepository.save(attempt);

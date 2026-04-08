@@ -9,13 +9,18 @@ import jakarta.persistence.Entity;
 @Entity
 public class Teacher extends BaseUser{
     @ElementCollection
-    protected Set<Long> createdCourseIDs;
+    private Set<Long> createdCourseIDs;
 
-    protected String department;
+    private String department;
     // ------------------------------------------------------------ //
-
+    
     public Teacher() {
         super();
+        this.createdCourseIDs = new HashSet<>();
+    }
+
+    public Teacher(String username, String password, String email) {
+        super(username, password, email);
         this.createdCourseIDs = new HashSet<>();
     }
 

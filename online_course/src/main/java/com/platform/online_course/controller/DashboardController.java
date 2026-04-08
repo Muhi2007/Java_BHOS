@@ -4,10 +4,12 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.platform.online_course.model.Learner;
+import com.platform.online_course.model.Teacher;
 import com.platform.online_course.model.Course;
 import com.platform.online_course.repository.CourseRepository;
 import com.platform.online_course.repository.LearnerRepository;
 import com.platform.online_course.repository.QuizAttemptRepository;
+import com.platform.online_course.repository.TeacherRepository;
 
 import jakarta.servlet.http.HttpSession;
 
@@ -18,17 +20,20 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
+
 @Controller
 public class DashboardController {
 
     private final CourseRepository courseRepository;
     private final LearnerRepository learnerRepository;
     private final QuizAttemptRepository attemptRepository;
+    private final TeacherRepository teacherRepository;
 
-    public DashboardController(CourseRepository courseRepository, LearnerRepository learnerRepository, QuizAttemptRepository attemptRepository) {
+    public DashboardController(CourseRepository courseRepository, LearnerRepository learnerRepository, QuizAttemptRepository attemptRepository, TeacherRepository teacherRepository) {
         this.courseRepository = courseRepository;
         this.learnerRepository = learnerRepository;
         this.attemptRepository = attemptRepository;
+        this.teacherRepository = teacherRepository;
     }
 
     @GetMapping("/learner/dashboard")
@@ -37,6 +42,14 @@ public class DashboardController {
 
         if (userId == null) {
             return "redirect:/login";
+        }
+
+        String userRole = (String) session.getAttribute("CurrUserRole");
+
+        if (userRole == null) {
+            return "redirect:/login";
+        } else if (!"Learner".equals(userRole)) {
+            return "redirect:/teacher/dashboard";
         }
 
         Learner user = learnerRepository.findById(userId).orElse(null);
@@ -51,6 +64,54 @@ public class DashboardController {
 
         return "learner-dashboard";
     }
+
+    @GetMapping("teacher/dashboard")
+    public String showTeacherDashboard(Model model, HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("CurrUserID");
+
+        if (userId == null) {
+            return "redirect:/login";
+        }
+
+        String userRole = (String) session.getAttribute("CurrUserRole");
+
+        if (userRole == null) {
+            return "redirect:/login";
+        } else if (!"Teacher".equals(userRole)) {
+            return "redirect:/learner/dashboard";
+        }
+
+        Teacher user = teacherRepository.findById(userId).orElse(null);
+
+        if (user == null) {
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        List<Course> teacherCourses = courseRepository.findAll().stream()
+            .filter(c -> c.getInstructor() != null
+                && c.getInstructor().getId() != null
+                && c.getInstructor().getId().equals(userId))
+            .collect(Collectors.toList());
+
+        int totalCoursesCreated = teacherCourses.size();
+        int totalLearners = teacherCourses.stream()
+            .mapToInt(c -> c.getEnrolledLearners() != null ? c.getEnrolledLearners().size() : 0)
+            .sum();
+
+        model.addAttribute("courses", teacherCourses);
+        model.addAttribute("teacherCourses", teacherCourses);
+        model.addAttribute("createdCourseIds", user.getCreatedCourseIDs());
+        model.addAttribute("username", user.getUsername());
+        model.addAttribute("totalCoursesCreated", totalCoursesCreated);
+        model.addAttribute("totalLearners", totalLearners);
+        model.addAttribute("publishedCount", 0);
+        model.addAttribute("pendingReviewsCount", 0);
+
+        return "teacher-dashboard";
+    }
+    
 
     @GetMapping("/learner/my-courses")
     public String showMyCourses(Model model, HttpSession session) {

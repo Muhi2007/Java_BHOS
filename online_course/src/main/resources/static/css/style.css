@@ -437,10 +437,67 @@ h1,h2,h3,h4,h5,h6 { font-weight: 700; }
   background-image: url('/images/auth-signup-illustration.svg');
 }
 
+/* Auth role switch (Teacher / Learner) */
+.role-switch-wrap {
+  background: #f8f9fc;
+  border: 1px solid #eceaf3;
+  border-radius: 12px;
+  padding: .7rem;
+}
+
+.role-switch {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .5rem;
+}
+
+.role-switch-input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.role-switch-label {
+  border: 1.5px solid #dee2e6;
+  border-radius: 9px;
+  background: #fff;
+  color: var(--text-muted);
+  font-weight: 600;
+  font-size: .92rem;
+  text-align: center;
+  padding: .58rem .75rem;
+  cursor: pointer;
+  transition: border-color .15s, background .15s, color .15s, box-shadow .15s;
+}
+
+.role-switch-label:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background: #f8f5fd;
+}
+
+.role-switch-input:checked + .role-switch-label {
+  border-color: var(--primary);
+  background: linear-gradient(135deg, #6f42c1, #8b63d3);
+  color: #fff;
+  box-shadow: 0 6px 14px rgba(111, 66, 193, .2);
+}
+
+.role-switch-input:focus-visible + .role-switch-label {
+  box-shadow: 0 0 0 .2rem rgba(111,66,193,.15);
+}
+
+.role-switch-hint {
+  margin-top: .5rem;
+  font-size: .78rem;
+  color: var(--text-muted);
+}
+
 /* ─────────────────────────────────────────────
    Mobile
 ──────────────────────────────────────────────── */
 @media (max-width: 768px) {
   #sidebar-wrapper { display: none; }
   .top-header { padding: .75rem 1rem; }
+  .role-switch-label { font-size: .88rem; padding: .55rem .55rem; }
 }

@@ -3,15 +3,16 @@ package com.platform.online_course.controller;
 import java.util.Objects;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 
+import com.platform.online_course.model.BaseUser;
 import com.platform.online_course.model.Learner;
+import com.platform.online_course.model.Teacher;
 import com.platform.online_course.repository.LearnerRepository;
+import com.platform.online_course.repository.TeacherRepository;
 
 import jakarta.servlet.http.HttpSession;
 
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -23,30 +24,48 @@ import org.springframework.web.bind.annotation.RequestParam;
 public class AuthController{
     // Injection
     private final LearnerRepository learnerRepository;
+    private final TeacherRepository teacherRepository;
 
-    public AuthController(LearnerRepository learnerRepository) {
+    public AuthController(LearnerRepository learnerRepository, TeacherRepository teacherRepository) {
         this.learnerRepository = learnerRepository;
+        this.teacherRepository = teacherRepository;
     }
 
     // Basically, whenever user goes to the given address 
     //empty Learner class generates to be filled up by user
     @GetMapping("/signup")
-    public String showSignupForm(Model model, HttpSession session) {
-        if (session.getAttribute("CurrUserID") != null) return "redirect:/learner/dashboard";
-
-        model.addAttribute("learner", new Learner());
+    public String showSignupForm(HttpSession session) {
+        if (session.getAttribute("CurrUserID") != null){
+            if (session.getAttribute("CurrUserRole").equals("Teacher")) {
+                return "redirect:/teacher/dashboard";
+            } else {
+                return "redirect:/learner/dashboard";
+            }
+        }
 
         return "signup";
     }
     
     @PostMapping("/signup")
-    public String processSignup(@ModelAttribute Learner learner) { // The atribiute automatically creates Learner by itself
-        Learner savedLearner = learnerRepository.findByEmail(learner.getEmail());
+    public String processSignup(@RequestParam String username, @RequestParam String password, @RequestParam String email, @RequestParam boolean isLearner) {
+           
+        try {
+            if (isLearner) {
+                Learner newLearner = new Learner(username, password, email);
 
-        if (savedLearner == null) learnerRepository.save(learner);
-        else return "redirect:/signup?error";
+                learnerRepository.save(newLearner);
+            } else {
+                Teacher newTeacher = new Teacher(username, password, email);
+                newTeacher.setDepartment("Pending");
 
-        return "redirect:/login";
+                teacherRepository.save(newTeacher);
+            }
+
+            return "redirect:/login?registered=true";
+        } catch (Exception e) {
+            return "redirect:/signup?error";
+        }
+       
     }
 
     @GetMapping("/login")
@@ -58,13 +77,14 @@ public class AuthController{
     }
     
     @PostMapping("/login")
-    public String processLogin(@RequestParam String email, @RequestParam String password, HttpSession session) {
-        Learner foundLearner = learnerRepository.findByEmail(email.toLowerCase());
+    public String processLogin(@RequestParam String email, @RequestParam String password, @RequestParam boolean isLearner,HttpSession session) {
+        BaseUser foundUser = isLearner? learnerRepository.findByEmail(email.toLowerCase()) : teacherRepository.findByEmail(email.toLowerCase());
 
-        if (foundLearner != null && Objects.equals(foundLearner.getPassword(), password)) {
-            session.setAttribute("CurrUserID", foundLearner.getId());
+        if (foundUser != null && Objects.equals(foundUser.getPassword(), password)) {
+            session.setAttribute("CurrUserID", foundUser.getId());
+            session.setAttribute("CurrUserRole", foundUser.getRole());
 
-            return "redirect:/learner/dashboard";
+            return "redirect:" + foundUser.getDashboardURL();
         }
 
         return "redirect:/login?error";
