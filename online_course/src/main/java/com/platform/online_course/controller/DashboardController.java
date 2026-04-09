@@ -4,11 +4,13 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import com.platform.online_course.model.Learner;
+import com.platform.online_course.model.Review;
 import com.platform.online_course.model.Teacher;
 import com.platform.online_course.model.Course;
 import com.platform.online_course.repository.CourseRepository;
 import com.platform.online_course.repository.LearnerRepository;
 import com.platform.online_course.repository.QuizAttemptRepository;
+import com.platform.online_course.repository.ReviewRepository;
 import com.platform.online_course.repository.TeacherRepository;
 
 import jakarta.servlet.http.HttpSession;
@@ -16,9 +18,9 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
-
 
 
 @Controller
@@ -28,12 +30,14 @@ public class DashboardController {
     private final LearnerRepository learnerRepository;
     private final QuizAttemptRepository attemptRepository;
     private final TeacherRepository teacherRepository;
+    private final ReviewRepository reviewRepository;
 
-    public DashboardController(CourseRepository courseRepository, LearnerRepository learnerRepository, QuizAttemptRepository attemptRepository, TeacherRepository teacherRepository) {
+    public DashboardController(ReviewRepository reviewRepository, CourseRepository courseRepository, LearnerRepository learnerRepository, QuizAttemptRepository attemptRepository, TeacherRepository teacherRepository) {
         this.courseRepository = courseRepository;
         this.learnerRepository = learnerRepository;
         this.attemptRepository = attemptRepository;
         this.teacherRepository = teacherRepository;
+        this.reviewRepository = reviewRepository;
     }
 
     @GetMapping("/learner/dashboard")
@@ -136,6 +140,8 @@ public class DashboardController {
             return "redirect:/learner/dashboard";
         }
 
+        List<Review> reviews = course.getReviews();
+
         // Build a map of quizId -> attempt for this learner to show completion state
         model.addAttribute("course", course);
         model.addAttribute("enrolled", user.getEnrolledCourseIDs());
@@ -144,9 +150,56 @@ public class DashboardController {
                 .filter(a -> a.getStudent() != null && a.getStudent().getId().equals(userId) && a.isComplete())
                 .map(a -> a.getQuiz().getId())
                 .collect(Collectors.toSet()));
+        model.addAttribute("reviews", reviews);
         
         return "course-detail";
-    }    
+    }
+
+    @GetMapping("/course/{courseId}/add-review")
+    public String showReviewCreate(@PathVariable Long courseId, HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("CurrUserID");
+        if (userId == null) return "redirect:/login";
+
+        Learner learner = learnerRepository.findById(userId).orElse(null);
+        if (learner == null){
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) return "redirect:/learner/dashboard";
+
+        model.addAttribute("review", new Review());
+        model.addAttribute("courseId", courseId);
+        
+        return "create-review";
+    }
+
+    @PostMapping("/course/{courseId}/add-review")
+    public String processReview(@PathVariable Long courseId, @ModelAttribute Review review, HttpSession session) {
+        Long userId = (Long) session.getAttribute("CurrUserID");
+        if (userId == null) return "redirect:/login";
+
+        Learner learner = learnerRepository.findById(userId).orElse(null);
+        if (learner == null){
+            session.invalidate();
+            return "redirect:/login";
+        }
+
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) return "redirect:/learner/dashboard";
+        
+        review.setCourse(course);
+        review.setReviewer(learner);
+        reviewRepository.save(review);
+
+        course.addRating(review);
+        courseRepository.save(course);
+
+        return "redirect:/course/"+courseId;
+    }
+    
+    
     
     @GetMapping("teacher/dashboard")
     public String showTeacherDashboard(Model model, HttpSession session) {

@@ -457,6 +457,49 @@ h1,h2,h3,h4,h5,h6 { font-weight: 700; }
   pointer-events: none;
 }
 
+/* ─────────────────────────────────────────────
+   Review Slider Rating
+──────────────────────────────────────────────── */
+.review-rating-card {
+  border-color: #eceaf3 !important;
+  background: #fbfbfe !important;
+}
+
+.review-stars {
+  position: relative;
+  display: inline-block;
+  font-size: 2rem;
+  line-height: 1;
+  letter-spacing: .18rem;
+  margin-bottom: .55rem;
+  user-select: none;
+}
+
+.review-stars-bg {
+  color: #d8dce6;
+  display: block;
+}
+
+.review-stars-fill {
+  position: absolute;
+  left: 0;
+  top: 0;
+  color: #f3b23a;
+  white-space: nowrap;
+  overflow: hidden;
+  width: 100%;
+  pointer-events: none;
+}
+
+.review-score-slider {
+  max-width: 360px;
+  margin-bottom: .45rem;
+}
+
+.review-score-slider:focus {
+  box-shadow: none;
+}
+
 .role-switch-label {
   border: 1.5px solid #dee2e6;
   border-radius: 9px;
