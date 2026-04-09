@@ -9,9 +9,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 import com.platform.online_course.model.Assessment;
 import com.platform.online_course.model.Course;
+import com.platform.online_course.model.Question;
 import com.platform.online_course.model.Quiz;
 import com.platform.online_course.model.Teacher;
 import com.platform.online_course.repository.CourseRepository;
+import com.platform.online_course.repository.QuestionRepository;
 import com.platform.online_course.repository.QuizRepository;
 import com.platform.online_course.repository.TeacherRepository;
 
@@ -20,16 +22,19 @@ import jakarta.servlet.http.HttpSession;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
+
 @Controller
 public class TeacherController {
     private final CourseRepository courseRepository;
     private final TeacherRepository teacherRepository;
     private final QuizRepository quizRepository;
+    private final QuestionRepository questionRepository;
 
-    public TeacherController(CourseRepository courseRepository, TeacherRepository teacherRepository, QuizRepository quizRepository) {
+    public TeacherController(CourseRepository courseRepository, TeacherRepository teacherRepository, QuizRepository quizRepository, QuestionRepository questionRepository) {
         this.courseRepository = courseRepository;
         this.teacherRepository = teacherRepository;
         this.quizRepository = quizRepository;
+        this.questionRepository = questionRepository;
     }
 
     @GetMapping("teacher/create-course")
@@ -190,7 +195,7 @@ public class TeacherController {
             quizRepository.save(currQuiz);
         }
 
-        return "redirect:/course/"+courseId+"/quizzes";
+        return "redirect:/course/"+courseId+"/quiz/"+quizId+"/questions";
     }
 
     @PostMapping("/course/{courseId}/quiz/{quizId}/delete")
@@ -218,6 +223,195 @@ public class TeacherController {
             quizRepository.delete(quiz);
         }
 
+        return "redirect:/course/"+courseId+"/quiz/"+quizId+"/questions";
+    }
+
+    @GetMapping("/course/{courseId}/quiz/{quizId}/questions")
+    public String showQuizQuestions(@PathVariable Long courseId, @PathVariable Long quizId, HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("CurrUserID");
+
+        if (userId == null) {
+            return "redirect:/login";
+        } else if (!"Teacher".equals(session.getAttribute("CurrUserRole"))) {
+            return "redirect:/learner/dashboard";
+        }
+
+        Teacher teacher = teacherRepository.findById(userId).orElse(null);
+
+        if (teacher == null) return "redirect:/login";
+        else if (!teacher.getCreatedCourseIDs().contains(courseId)) return "redirect:" + teacher.getDashboardURL();
+
+        Course currCourse = courseRepository.findById(courseId).orElse(null);
+        if (currCourse == null) return "redirect:/teacher/dashboard";
+
+        Quiz currQuiz = quizRepository.findById(quizId).orElse(null);
+        if (currQuiz == null) return "redirect:/course/"+courseId+"/quizzes";
+
+        List<Question> questions = currQuiz.getQuestions();
+        
+        model.addAttribute("questions", questions);
+        model.addAttribute("courseId", courseId);
+        model.addAttribute("quizId", quizId);
+
+        return "quiz-questions";
+    }
+
+    @GetMapping("/course/{courseId}/quiz/{quizId}/create-question")
+    public String showQuizCreate(@PathVariable Long courseId, @PathVariable Long quizId, HttpSession session, Model model) {
+        Long userId = (Long) session.getAttribute("CurrUserID");
+
+        if (userId == null) {
+            return "redirect:/login";
+        } else if (!"Teacher".equals(session.getAttribute("CurrUserRole"))) {
+            return "redirect:/learner/dashboard";
+        }
+
+        Teacher teacher = teacherRepository.findById(userId).orElse(null);
+
+        if (teacher == null) return "redirect:/login";
+        else if (!teacher.getCreatedCourseIDs().contains(courseId)) return "redirect:" + teacher.getDashboardURL();
+
+        Course currCourse = courseRepository.findById(courseId).orElse(null);
+        if (currCourse == null) return "redirect:/teacher/dashboard";
+
+        Quiz currQuiz = quizRepository.findById(quizId).orElse(null);
+        if (currQuiz == null) return "redirect:/course/"+courseId+"/quizzes";
+
+        model.addAttribute("question", new Question());
+        model.addAttribute("quizId", quizId);
+        model.addAttribute("courseId", courseId);
+
+        return "question-create";
+    }
+
+    @PostMapping("/course/{courseId}/quiz/{quizId}/create-question")
+    public String processQuestionCreate(@PathVariable Long courseId, @PathVariable Long quizId, @ModelAttribute Question question, HttpSession session) {
+
+        Long userId = (Long) session.getAttribute("CurrUserID");
+
+        if (userId == null) {
+            return "redirect:/login";
+        } else if (!"Teacher".equals(session.getAttribute("CurrUserRole"))) {
+            return "redirect:/learner/dashboard";
+        }
+
+        Teacher teacher = teacherRepository.findById(userId).orElse(null);
+
+        if (teacher == null) return "redirect:/login";
+        else if (!teacher.getCreatedCourseIDs().contains(courseId)) return "redirect:" + teacher.getDashboardURL();
+
+        Course currCourse = courseRepository.findById(courseId).orElse(null);
+        if (currCourse == null) return "redirect:/teacher/dashboard";
+
+        Quiz currQuiz = quizRepository.findById(quizId).orElse(null);
+        if (currQuiz == null) return "redirect:/course/"+courseId+"/quizzes";
+
+        Question savedQuestion = questionRepository.save(question);
+
+        currQuiz.getQuestions().add(savedQuestion);
+        quizRepository.save(currQuiz);
+
+        return "redirect:/course/"+courseId+"/quiz/"+quizId+"/questions";
+    }
+
+    @GetMapping("/course/{courseId}/quiz/{quizId}/question/{questionId}/edit")
+    public String showQuestionEditForm(@PathVariable Long courseId, @PathVariable Long quizId, @PathVariable Long questionId, HttpSession session, Model model){
+        Long userId = (Long) session.getAttribute("CurrUserID");
+
+        if (userId == null) {
+            return "redirect:/login";
+        } else if (!"Teacher".equals(session.getAttribute("CurrUserRole"))) {
+            return "redirect:/learner/dashboard";
+        }
+
+        Teacher teacher = teacherRepository.findById(userId).orElse(null);
+
+        if (teacher == null) return "redirect:/login";
+        else if (!teacher.getCreatedCourseIDs().contains(courseId)) return "redirect:" + teacher.getDashboardURL();
+
+        Course currCourse = courseRepository.findById(courseId).orElse(null);
+        if (currCourse == null) return "redirect:/teacher/dashboard";
+
+        Quiz currQuiz = quizRepository.findById(quizId).orElse(null);
+        if (currQuiz == null) return "redirect:/course/"+courseId+"/quizzes";
+
+        Question question = questionRepository.findById(questionId).orElse(null);
+        if (question == null) return "redirect:/course/"+courseId+"/quiz/"+quizId+"/questions";
+
+        model.addAttribute("question", question);
+        model.addAttribute("courseId", courseId);
+        model.addAttribute("quizId", quizId);
+
+        return "question-edit";
+    }
+
+    @PostMapping("/course/{courseId}/quiz/{quizId}/question/{questionId}/edit")
+    public String processQuizEdit(@PathVariable Long courseId, @PathVariable Long quizId, @PathVariable Long questionId, @ModelAttribute Question updatedQuestion, HttpSession session) {
+        Long userId = (Long) session.getAttribute("CurrUserID");
+
+        if (userId == null) {
+            return "redirect:/login";
+        } else if (!"Teacher".equals(session.getAttribute("CurrUserRole"))) {
+            return "redirect:/learner/dashboard";
+        }
+
+        Teacher teacher = teacherRepository.findById(userId).orElse(null);
+
+        if (teacher == null) return "redirect:/login";
+        else if (!teacher.getCreatedCourseIDs().contains(courseId)) return "redirect:" + teacher.getDashboardURL();
+
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) return "redirect:/teacher/dashboard";
+
+        Quiz quiz = quizRepository.findById(quizId).orElse(null);
+        if (quiz == null) return "redirect:/course/"+courseId+"/quizzes";
+
+        Question question = questionRepository.findById(questionId).orElse(null);
+        if (question == null) return "redirect:/course/"+courseId+"/quiz/"+quizId+"/questions";
+
+
+        Question currQuestion = questionRepository.findById(questionId).orElse(null);
+        if (currQuestion != null) {
+            currQuestion.setOptions(updatedQuestion.getOptions());
+            currQuestion.setCorrectAnswer(updatedQuestion.getCorrectAnswer());
+            currQuestion.setText(updatedQuestion.getText());
+
+            questionRepository.save(currQuestion);
+        }
+
         return "redirect:/course/"+courseId+"/quizzes";
     }
+
+    @PostMapping("course/{courseId}/quiz/{quizId}/question/{questionId}/delete")
+    public String deleteQuestion(@PathVariable Long courseId, @PathVariable Long quizId, @PathVariable Long questionId, HttpSession session) {
+        Long userId = (Long) session.getAttribute("CurrUserID");
+
+        if (userId == null) {
+            return "redirect:/login";
+        } else if (!"Teacher".equals(session.getAttribute("CurrUserRole"))) {
+            return "redirect:/learner/dashboard";
+        }
+
+        Teacher teacher = teacherRepository.findById(userId).orElse(null);
+
+        if (teacher == null) return "redirect:/login";
+        else if (!teacher.getCreatedCourseIDs().contains(courseId)) return "redirect:" + teacher.getDashboardURL();
+
+        Course course = courseRepository.findById(courseId).orElse(null);
+        if (course == null) return "redirect:/teacher/dashboard";
+
+        Quiz quiz = quizRepository.findById(quizId).orElse(null);
+        if (quiz == null) return "redirect:/course/"+courseId+"/quizzes";
+
+        Question question = questionRepository.findById(questionId).orElse(null);
+        if (question == null) return "redirect:/course/"+courseId+"/quiz/"+quizId+"/questions";
+
+        quiz.getQuestions().remove(question);
+        quizRepository.save(quiz);
+
+        questionRepository.delete(question);
+
+        return "redirect:/course/"+courseId+"/quiz/"+quizId+"/questions";
+    }
+    
 }

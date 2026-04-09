@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 
 
+
 @Controller
 public class DashboardController {
 
@@ -140,13 +141,12 @@ public class DashboardController {
         model.addAttribute("enrolled", user.getEnrolledCourseIDs());
         model.addAttribute("completedAttempts", 
             attemptRepository.findAll().stream()
-                .filter(a -> a.getStudent() != null && a.getStudent().getId().equals(userId)
-                          && a.isComplete())
+                .filter(a -> a.getStudent() != null && a.getStudent().getId().equals(userId) && a.isComplete())
                 .map(a -> a.getQuiz().getId())
                 .collect(Collectors.toSet()));
         
         return "course-detail";
-    }
+    }    
     
     @GetMapping("teacher/dashboard")
     public String showTeacherDashboard(Model model, HttpSession session) {
@@ -183,14 +183,17 @@ public class DashboardController {
             .mapToInt(c -> c.getEnrolledLearners() != null ? c.getEnrolledLearners().size() : 0)
             .sum();
 
+        int reviewCount = teacherCourses.stream()
+            .mapToInt(c -> c.getReviews() != null ? c.getReviews().size() : 0)
+            .sum();
+
         model.addAttribute("courses", teacherCourses);
         model.addAttribute("teacherCourses", teacherCourses);
         model.addAttribute("createdCourseIds", user.getCreatedCourseIDs());
         model.addAttribute("username", user.getUsername());
         model.addAttribute("totalCoursesCreated", totalCoursesCreated);
         model.addAttribute("totalLearners", totalLearners);
-        model.addAttribute("publishedCount", 0);
-        model.addAttribute("pendingReviewsCount", 0);
+        model.addAttribute("pendingReviewsCount", reviewCount);
 
         return "teacher-dashboard";
     }
