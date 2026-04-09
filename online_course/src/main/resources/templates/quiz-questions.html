@@ -3,55 +3,84 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Quiz Questions - Learnify</title>
+    <title>Quiz Questions – Learnify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-light">
+<body style="background: var(--bg);">
 <div class="container py-5">
+
+    <!-- Back link -->
+    <a th:href="@{/course/{id}/quizzes(id=${courseId})}" class="d-inline-flex align-items-center gap-2 mb-4 text-decoration-none"
+       style="color:#94a3b8; font-size:.86rem; font-weight:500;">
+        <i class="bi bi-arrow-left"></i> Back to Quizzes
+    </a>
+
+    <!-- Page header -->
     <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
         <div>
-            <h2 class="h4 mb-1 fw-bold">Quiz Questions</h2>
-            <p class="text-muted mb-0">Review and manage the questions in this quiz.</p>
+            <h2 class="fw-bold mb-1" style="font-size:1.5rem;">Quiz Questions</h2>
+            <p class="text-muted mb-0" style="font-size:.88rem;">Review and manage the questions in this quiz.</p>
         </div>
         <a th:href="@{/course/{courseId}/quiz/{quizId}/create-question(courseId=${courseId}, quizId=${quizId})}"
-           class="btn btn-primary">Create Question</a>
+           class="btn btn-primary" id="add-question-btn">
+            <i class="bi bi-plus-circle me-2"></i>Add Question
+        </a>
     </div>
 
+    <!-- Table card -->
     <div class="card shadow-sm border-0">
         <div class="card-body p-0">
             <div class="table-responsive">
                 <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
+                    <thead>
                     <tr>
-                        <th class="ps-4">Question</th>
-                        <th>Correct Answer</th>
-                        <th class="text-end pe-4">Actions</th>
+                        <th class="ps-4" style="width:55%;">Question Details</th>
+                        <th style="width:25%;">Correct Answer</th>
+                        <th class="text-end pe-4" style="width:20%;">Actions</th>
                     </tr>
                     </thead>
                     <tbody>
                     <tr th:if="${#lists.isEmpty(questions)}">
-                        <td colspan="3" class="text-center py-5 text-muted">No questions added yet.</td>
+                        <td colspan="3" class="text-center py-5">
+                            <i class="bi bi-ui-checks-grid" style="font-size:2.5rem; color:#ddd4fe;"></i>
+                            <p class="text-muted small mt-2 mb-0">No questions added yet. Create the first one.</p>
+                        </td>
                     </tr>
                     <tr th:each="question : ${questions}">
-                        <td class="ps-4">
-                            <div class="fw-semibold" th:text="${question.text}">Question text</div>
-                            <div class="small text-muted mt-1" th:if="${question.options != null and !#lists.isEmpty(question.options)}">
-                                Options:
-                                <span th:each="opt, stat : ${question.options}">
-                                    <span th:text="${opt}">Option</span><span th:if="${!stat.last}">, </span>
+                        <td class="ps-4 py-3">
+                            <div class="fw-semibold mb-2" style="font-size:.92rem; color:var(--text);" th:text="${question.text}">Question text</div>
+                            <div th:if="${question.options != null and !#lists.isEmpty(question.options)}" class="d-flex flex-wrap gap-2">
+                                <span th:each="opt, stat : ${question.options}"
+                                      class="badge fw-medium"
+                                      style="background:#f1f0f8; color:#64748b; font-size:.75rem; padding:.35em .6em; border-radius:6px; border:1px solid #e5e3f0;">
+                                    <span style="color:#a78bfa;" th:text="${stat.index == 0 ? 'A.' : (stat.index == 1 ? 'B.' : (stat.index == 2 ? 'C.' : 'D.'))}"></span>
+                                    <span th:text="${opt}" class="ms-1">Option</span>
                                 </span>
                             </div>
                         </td>
-                        <td th:text="${question.correctAnswer}">Correct answer</td>
+                        <td>
+                            <div class="d-inline-flex align-items-center gap-2 px-3 py-1 rounded-pill"
+                                 style="background:#f0fdf4; border:1px solid #bbf7d0; color:#166534; font-size:.8rem; font-weight:500;">
+                                <i class="bi bi-check2-circle"></i>
+                                <span th:text="${question.correctAnswer}">Correct answer</span>
+                            </div>
+                        </td>
                         <td class="text-end pe-4">
-                            <div class="d-inline-flex gap-2">
+                            <div class="d-inline-flex flex-column gap-2 align-items-end">
                                 <a th:href="@{/course/{courseId}/quiz/{quizId}/question/{questionId}/edit(courseId=${courseId}, quizId=${quizId}, questionId=${question.id})}"
-                                   class="btn btn-sm btn-warning text-dark">Edit</a>
+                                   class="btn btn-sm btn-outline-secondary fw-semibold w-100 text-center">
+                                    <i class="bi bi-pencil me-1"></i>Edit
+                                </a>
                                 <form th:action="@{/course/{courseId}/quiz/{quizId}/question/{questionId}/delete(courseId=${courseId}, quizId=${quizId}, questionId=${question.id})}"
-                                      method="post" class="d-inline">
-                                    <button type="submit" class="btn btn-sm btn-danger"
-                                            onclick="return confirm('Are you sure you want to delete this question?');">Delete</button>
+                                      method="post" class="d-inline w-100">
+                                    <button type="submit" class="btn btn-sm btn-outline-secondary fw-semibold w-100"
+                                            style="color:#dc2626; border-color:#fca5a5;"
+                                            onclick="return confirm('Remove this question from the quiz?');">
+                                        <i class="bi bi-trash me-1"></i>Delete
+                                    </button>
                                 </form>
                             </div>
                         </td>
@@ -62,9 +91,6 @@
         </div>
     </div>
 
-    <div class="mt-4">
-        <a th:href="@{/course/{courseId}/quizzes(courseId=${courseId})}" class="btn btn-secondary">Back to Quizzes</a>
-    </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

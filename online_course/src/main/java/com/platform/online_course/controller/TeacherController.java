@@ -117,7 +117,7 @@ public class TeacherController {
         currCourse.getAssessments().add(savedQuiz);
         courseRepository.save(currCourse);
 
-        return "redirect:/teacher/dashboard";
+        return "redirect:/course/"+courseId+"/quizzes";
     }
 
     @GetMapping("/course/{courseId}/quizzes")

@@ -3,54 +3,80 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Quiz - Learnify</title>
+    <title>Edit Quiz – Learnify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/style.css">
 </head>
-<body class="bg-light">
+<body style="background: var(--bg);">
 <div class="container py-5">
     <div class="row justify-content-center">
-        <div class="col-12 col-lg-8">
+        <div class="col-12 col-lg-7">
+
+            <!-- Back link -->
+            <a th:href="@{/course/{id}/quizzes(id=${courseId})}" class="d-inline-flex align-items-center gap-2 mb-4 text-decoration-none"
+               style="color:#94a3b8; font-size:.86rem; font-weight:500;">
+                <i class="bi bi-arrow-left"></i> Back to Quizzes
+            </a>
+
             <div class="card shadow-sm border-0">
-                <div class="card-header bg-white border-0 pt-4 px-4">
-                    <h2 class="h4 mb-1 fw-bold">Edit Quiz</h2>
-                    <p class="text-muted mb-0">Update quiz details for this course.</p>
+                <!-- Card header -->
+                <div class="p-4 pb-2 border-bottom" style="background: linear-gradient(135deg, #fef3c7, #fff); border-radius: var(--card-radius) var(--card-radius) 0 0;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="stat-icon bg-orange-light flex-shrink-0">
+                            <i class="bi bi-pencil text-warning" style="color:#d97706 !important; font-size:1.2rem;"></i>
+                        </div>
+                        <div>
+                            <h2 class="h5 mb-0 fw-bold">Edit Quiz</h2>
+                            <p class="text-muted small mb-0">Update the details of this assessment.</p>
+                        </div>
+                    </div>
                 </div>
 
-                <div class="card-body px-4 pb-4">
-                    <form th:action="@{/course/{courseId}/quiz/{quizId}/edit(courseId=${courseId}, quizId=${quiz.id})}"
-                          th:object="${quiz}" method="post">
-                        <div class="mb-3">
-                            <label for="name" class="form-label fw-semibold">Name</label>
+                <div class="card-body p-4">
+                    <form th:action="@{/course/{cId}/quiz/{qId}/edit(cId=${courseId}, qId=${quiz.id})}" th:object="${quiz}" method="post">
+
+                        <div class="mb-4">
+                            <label for="name" class="form-label">QUIZ NAME</label>
                             <input id="name" type="text" class="form-control" th:field="*{name}" required>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="description" class="form-label fw-semibold">Description</label>
-                            <textarea id="description" class="form-control" th:field="*{description}" rows="4" required></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="maxScore" class="form-label fw-semibold">Max Score</label>
-                            <input id="maxScore" type="number" class="form-control" th:field="*{maxScore}" min="0" step="1" required>
-                        </div>
-
                         <div class="mb-4">
-                            <label for="difficulty" class="form-label fw-semibold">Difficulty</label>
-                            <select id="difficulty" class="form-select" th:field="*{difficulty}" required>
-                                <option value="Easy">Easy</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Hard">Hard</option>
-                            </select>
+                            <label for="description" class="form-label">DESCRIPTION</label>
+                            <textarea id="description" class="form-control" th:field="*{description}" rows="3" required></textarea>
                         </div>
 
-                        <div class="d-flex gap-2 justify-content-end">
-                            <a th:href="@{/course/{courseId}/quizzes(courseId=${courseId})}" class="btn btn-secondary">Cancel</a>
-                            <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <div class="row g-3 mb-5">
+                            <div class="col-md-6">
+                                <label for="maxScore" class="form-label">MAX SCORE</label>
+                                <div class="input-group">
+                                    <span class="input-group-text"><i class="bi bi-trophy"></i></span>
+                                    <input id="maxScore" type="number" class="form-control" th:field="*{maxScore}" min="0" step="1" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="difficulty" class="form-label">DIFFICULTY</label>
+                                <select id="difficulty" class="form-select" th:field="*{difficulty}" required>
+                                    <option value="Easy">Easy</option>
+                                    <option value="Medium">Medium</option>
+                                    <option value="Hard">Hard</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="d-flex gap-3 justify-content-end pt-3 border-top">
+                            <a th:href="@{/course/{id}/quizzes(id=${courseId})}" class="btn btn-outline-secondary" id="cancel-edit-btn">
+                                <i class="bi bi-x-circle me-1"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary px-4" id="save-quiz-btn">
+                                <i class="bi bi-save me-1"></i>Save Changes
+                            </button>
                         </div>
                     </form>
                 </div>
             </div>
+
         </div>
     </div>
 </div>

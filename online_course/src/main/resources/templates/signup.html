@@ -3,93 +3,126 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign Up - Learnify Platform</title>
-    <!-- Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Bootstrap CSS -->
+    <meta name="description" content="Create your free Learnify account and start learning today.">
+    <title>Sign Up – Learnify</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="/css/style.css">
+    <style>
+        body { background: linear-gradient(160deg, #f5f4fa 0%, #ede9fe 100%); }
+        .auth-card {
+            border: none;
+            border-radius: 22px;
+            box-shadow: 0 16px 50px rgba(124,58,237,.14), 0 4px 16px rgba(0,0,0,.06);
+            overflow: hidden;
+        }
+        .auth-form-side { padding: 2.75rem 2.5rem; }
+        @media (max-width: 767px) { .auth-form-side { padding: 2rem 1.5rem; } }
+    </style>
 </head>
-<body class="bg-light d-flex align-items-center" style="min-height: 100vh;">
+<body class="d-flex align-items-center" style="min-height: 100vh;">
     <div class="container py-5">
         <div class="row w-100 mx-auto justify-content-center">
-            
             <div class="col-12 col-md-10 col-lg-8 col-xl-7">
-                <div class="card shadow-md border-0 overflow-hidden">
+                <div class="auth-card">
                     <div class="row g-0 flex-row-reverse">
+
                         <!-- Branding Side -->
                         <div class="col-md-5 d-none d-md-flex align-items-center justify-content-center auth-side-panel auth-side-signup">
                             <div class="text-center px-4 py-5 auth-side-content">
-                                <i class="bi bi-rocket-takeoff-fill mb-3" style="font-size: 3.5rem;"></i>
-                                <h3 class="fw-bold">Join Us Today</h3>
-                                <p class="small opacity-75 mt-2">Discover new skills, meet expert instructors, and take your career to the next level.</p>
+                                <div class="mb-4" style="font-size: 3.5rem; line-height:1;">
+                                    <i class="bi bi-rocket-takeoff-fill"></i>
+                                </div>
+                                <h3 class="fw-bold mb-2">Join Us Today</h3>
+                                <p class="small opacity-80 mt-2 mb-0" style="line-height:1.65;">
+                                    Discover new skills, connect with expert instructors, and take your career to new heights.
+                                </p>
+                                <div class="mt-4 d-flex justify-content-center gap-2 flex-wrap">
+                                    <span class="px-3 py-1 rounded-pill small fw-semibold"
+                                          style="background:rgba(255,255,255,.18); font-size:.75rem;">
+                                        <i class="bi bi-check2-circle me-1"></i>Free forever
+                                    </span>
+                                    <span class="px-3 py-1 rounded-pill small fw-semibold"
+                                          style="background:rgba(255,255,255,.18); font-size:.75rem;">
+                                        <i class="bi bi-collection me-1"></i>All courses
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
                         <!-- Form Side -->
                         <div class="col-md-7">
-                            <div class="card-body p-4 p-md-5">
+                            <div class="auth-form-side">
+                                <!-- Mobile logo -->
                                 <div class="text-center mb-4 d-md-none">
                                     <i class="bi bi-mortarboard-fill text-primary" style="font-size: 2.5rem;"></i>
-                                    <h4 class="fw-bold mt-2">Learnify</h4>
+                                    <h4 class="fw-bold mt-2 mb-0">Learnify</h4>
                                 </div>
-                                <h2 class="fw-bold text-center mb-1 text-md-start">Create Account</h2>
-                                <p class="text-muted text-center text-md-start mb-4">Start your learning journey for free</p>
 
-                                <div class="alert alert-danger rounded-custom" th:if="${param.error}" role="alert">
-                                    <i class="bi bi-exclamation-triangle-fill me-2"></i> Unable to complete signup. Please try again.
+                                <h2 class="fw-bold mb-1" style="font-size:1.65rem;">Create your account</h2>
+                                <p class="mb-4" style="color:#64748b; font-size:.9rem;">Start your learning journey — it's completely free</p>
+
+                                <!-- Error alert -->
+                                <div class="alert alert-danger d-flex align-items-center gap-2 rounded-custom" th:if="${param.error}" role="alert">
+                                    <i class="bi bi-exclamation-triangle-fill flex-shrink-0"></i>
+                                    <span>Unable to complete signup. Please try again.</span>
                                 </div>
 
                                 <form th:action="@{/signup}" method="post">
+
+                                    <!-- Role switch -->
                                     <div class="mb-4">
-                                        <label class="form-label fw-medium text-muted small d-block">I AM SIGNING UP AS</label>
+                                        <label class="form-label">I AM SIGNING UP AS</label>
                                         <div class="role-switch-wrap">
                                             <div class="role-switch" role="radiogroup" aria-label="Select account type">
-                                            <input class="role-switch-input" type="radio" name="isLearner" id="signupLearner" value="true" checked>
-                                            <label class="role-switch-label" for="signupLearner">
-                                                <i class="bi bi-mortarboard me-1"></i>Learner
-                                            </label>
-
-                                            <input class="role-switch-input" type="radio" name="isLearner" id="signupTeacher" value="false">
-                                            <label class="role-switch-label" for="signupTeacher">
-                                                <i class="bi bi-easel2 me-1"></i>Teacher
-                                            </label>
+                                                <input class="role-switch-input" type="radio" name="isLearner" id="signupLearner" value="true" checked>
+                                                <label class="role-switch-label" for="signupLearner">
+                                                    <i class="bi bi-mortarboard me-1"></i>Learner
+                                                </label>
+                                                <input class="role-switch-input" type="radio" name="isLearner" id="signupTeacher" value="false">
+                                                <label class="role-switch-label" for="signupTeacher">
+                                                    <i class="bi bi-easel2 me-1"></i>Teacher
+                                                </label>
                                             </div>
                                             <p class="role-switch-hint mb-0">Choose how you want to use Learnify.</p>
                                         </div>
                                     </div>
 
+                                    <!-- Username -->
                                     <div class="mb-3">
-                                        <label for="username" class="form-label fw-medium text-muted small">USERNAME</label>
+                                        <label for="username" class="form-label">USERNAME</label>
                                         <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-person text-muted"></i></span>
-                                            <input type="text" id="username" name="username" class="form-control border-start-0" placeholder="Choose a username" required>
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <input type="text" id="username" name="username" class="form-control" placeholder="Choose a username" required>
                                         </div>
                                     </div>
 
+                                    <!-- Email -->
                                     <div class="mb-3">
-                                        <label for="email" class="form-label fw-medium text-muted small">EMAIL ADDRESS</label>
+                                        <label for="email" class="form-label">EMAIL ADDRESS</label>
                                         <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-envelope text-muted"></i></span>
-                                            <input type="email" id="email" name="email" class="form-control border-start-0" placeholder="name@example.com" required>
+                                            <span class="input-group-text"><i class="bi bi-envelope"></i></span>
+                                            <input type="email" id="email" name="email" class="form-control" placeholder="name@example.com" required>
                                         </div>
                                     </div>
 
+                                    <!-- Password -->
                                     <div class="mb-4">
-                                        <label for="password" class="form-label fw-medium text-muted small">PASSWORD</label>
+                                        <label for="password" class="form-label">PASSWORD</label>
                                         <div class="input-group">
-                                            <span class="input-group-text bg-light border-end-0"><i class="bi bi-shield-lock text-muted"></i></span>
-                                            <input type="password" id="password" name="password" class="form-control border-start-0" placeholder="Create a password" required>
+                                            <span class="input-group-text"><i class="bi bi-shield-lock"></i></span>
+                                            <input type="password" id="password" name="password" class="form-control" placeholder="Create a strong password" required>
                                         </div>
                                     </div>
 
-                                    <button type="submit" class="btn btn-primary w-100 py-2 fs-5 mb-3">Sign Up</button>
-                                    
-                                    <div class="text-center">
-                                        <span class="text-muted small">Already have an account? </span>
-                                        <a href="/login" class="text-decoration-none fw-semibold" style="color: var(--primary-color);">Log In</a>
+                                    <button type="submit" class="btn btn-primary w-100 py-2 mb-4" style="font-size:1rem;">
+                                        <i class="bi bi-person-check me-2"></i>Create Account
+                                    </button>
+
+                                    <div class="text-center" style="font-size:.88rem;">
+                                        <span style="color:#94a3b8;">Already have an account? </span>
+                                        <a href="/login" class="text-decoration-none fw-semibold" style="color:var(--primary);">Sign in</a>
                                     </div>
                                 </form>
                             </div>
@@ -97,11 +130,9 @@
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 
-    <!-- Bootstrap Bundle -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
