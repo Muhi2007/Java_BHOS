@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 
 
+
 @Controller
 public class CourseController {
 
@@ -53,6 +54,8 @@ public class CourseController {
         
         if (userId == null) {
             return "redirect:/login";
+        } else if (!"Learner".equals(session.getAttribute("CurrUserRole"))) {
+            return "redirect:/teacher/dashboard";
         }
 
         Learner student = learnerRepository.findById(userId).orElse(null);
@@ -126,7 +129,6 @@ public class CourseController {
             answer = answersMap.get(String.valueOf(i));
             
             if (answer != null) {
-                // FIX 2: Use the exact Question ID as the key!
                 normalizedAnswers.put(questionId, answer);
             }
         }

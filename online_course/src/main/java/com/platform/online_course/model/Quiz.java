@@ -13,15 +13,16 @@ import jakarta.persistence.Transient;
 
 @Entity
 public class Quiz extends Assessment {
-    protected int quizNumber;
-    protected String difficulty;
+    private int quizNumber;
+    private String difficulty;
+    private String description;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "quiz_id")
-    protected List<Question> questions = new ArrayList<>();
+    private List<Question> questions = new ArrayList<>();
 
     @Transient
-    protected Map<Long, String> submittedAnswers = new HashMap<>();
+    private Map<Long, String> submittedAnswers = new HashMap<>();
 
     public Quiz() {
     }
@@ -40,6 +41,14 @@ public class Quiz extends Assessment {
 
     public String getDifficulty() {
         return this.difficulty;
+    }
+
+    public String getDescription() {
+        return this.description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setQuestions(List<Question> questions) {

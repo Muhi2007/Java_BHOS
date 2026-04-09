@@ -115,16 +115,23 @@
                                     <th>Course</th>
                                     <th>Status</th>
                                     <th>Updated</th>
+                                    <th class="text-end">Actions</th>
                                 </tr>
                                 </thead>
                                 <tbody>
                                 <tr th:if="${#lists.isEmpty(teacherCourses)}">
-                                    <td colspan="3" class="text-muted small">No courses yet. Create your first course to see activity.</td>
+                                    <td colspan="4" class="text-muted small">No courses yet. Create your first course to see activity.</td>
                                 </tr>
                                 <tr th:each="course : ${teacherCourses}">
                                     <td class="fw-medium" th:text="${course.name}">Course name</td>
                                     <td><span class="badge bg-secondary-subtle text-secondary">Active</span></td>
                                     <td class="text-muted small">--</td>
+                                    <td class="text-end">
+                                        <a class="btn btn-sm btn-outline-primary"
+                                           th:href="@{/course/{courseId}/quizzes(courseId=${course.id})}">
+                                            <i class="bi bi-collection me-1"></i>Quizzes
+                                        </a>
+                                    </td>
                                 </tr>
                                 </tbody>
                             </table>

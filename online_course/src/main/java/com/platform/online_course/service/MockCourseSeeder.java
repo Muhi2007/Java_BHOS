@@ -72,7 +72,7 @@ public class MockCourseSeeder {
         Quiz springQuiz1 = buildQuiz("Spring Core Concepts", "Easy", 10, 1,
             Arrays.asList(
                 buildQuestion("Which annotation marks a class as a Spring-managed component?",
-                    Arrays.asList("@Component", "@Bean", "@Entity", "@Service"), "@Component"),
+                    Arrays.asList("@Component", "@Bean", "@Entity", "@Service", "@Test"), "@Component"),
                 buildQuestion("What does @Autowired do?",
                     Arrays.asList("Injects dependencies automatically", "Creates a new bean", "Maps HTTP routes", "Validates input"), "Injects dependencies automatically"),
                 buildQuestion("Which annotation is used to define a REST controller?",

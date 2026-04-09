@@ -20,24 +20,24 @@ import jakarta.persistence.OneToMany;
 public class Course implements Enrollable, Reviewable{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    protected Long id;
+    private Long id;
 
-    protected String name;
-    protected String category;
-    protected String description;
-    protected double averageDuration;
-    protected double rating;
+    private String name;
+    private String category;
+    private String description;
+    private double averageDuration;
+    private double rating;
 
     @ManyToOne
     @JoinColumn(name = "teacher_id")
-    protected Teacher instructor;
+    private Teacher instructor;
 
     @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
     @JoinColumn(name = "course_id")
-    protected List<Assessment> assessments = new ArrayList<>();
+    private List<Assessment> assessments = new ArrayList<>();
 
     @OneToMany(mappedBy = "course", cascade = CascadeType.ALL, orphanRemoval = true)
-    protected List<Review> reviews = new ArrayList<>();
+    private List<Review> reviews = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -45,7 +45,7 @@ public class Course implements Enrollable, Reviewable{
         joinColumns = @JoinColumn(name = "course_id"),
         inverseJoinColumns = @JoinColumn(name = "learner_id")
     )
-    protected Set<Learner> enrolledLearners = new HashSet<>();
+    private Set<Learner> enrolledLearners = new HashSet<>();
 
     public Course() {}
     

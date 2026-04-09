@@ -143,7 +143,7 @@ public class DashboardController {
                 .filter(a -> a.getStudent() != null && a.getStudent().getId().equals(userId)
                           && a.isComplete())
                 .map(a -> a.getQuiz().getId())
-                .collect(java.util.stream.Collectors.toSet()));
+                .collect(Collectors.toSet()));
         
         return "course-detail";
     }
