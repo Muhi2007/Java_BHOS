@@ -43,7 +43,7 @@ public class CourseController {
 
     @GetMapping("/")
     public String homePage(Model model) {
-        model.addAttribute("platformName", "Our Awesome Course Platform");
+        model.addAttribute("platformName", "Learnify");
         
         return "index"; 
     }
